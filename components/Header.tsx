@@ -8,15 +8,26 @@ const Header: React.FC = () => {
   const isActive: (pathname: string) => boolean = (pathname) =>
     router.pathname === pathname;
 
-  const {data: session, status} = useSession();
+  const {
+    data: session,
+    status,
+  }: {
+    status: string;
+    data: {
+      user: {
+        phoneNumber: string;
+        firstName: string;
+        lastName: string;
+        id: string;
+        name?: string;
+        email?: string;
+        image?: string;
+      };
+    };
+  } = useSession();
 
   let left = (
     <div className="left">
-      <Link href="/">
-        <a className="bold" data-active={isActive("/")}>
-          Feed
-        </a>
-      </Link>
       <style jsx>{`
         .bold {
           font-weight: bold;
@@ -41,14 +52,9 @@ const Header: React.FC = () => {
 
   let right = null;
 
-  if (status === 'loading') {
+  if (status === "loading") {
     left = (
       <div className="left">
-        <Link href="/">
-          <a className="bold" data-active={isActive("/")}>
-            Feed
-          </a>
-        </Link>
         <style jsx>{`
           .bold {
             font-weight: bold;
@@ -85,7 +91,7 @@ const Header: React.FC = () => {
   if (!session) {
     right = (
       <div className="right">
-        <Link href="/api/auth/signin">
+        <Link href="/login">
           <a data-active={isActive("/signup")}>Log in</a>
         </Link>
         <style jsx>{`
@@ -116,14 +122,6 @@ const Header: React.FC = () => {
   if (session) {
     left = (
       <div className="left">
-        <Link href="/">
-          <a className="bold" data-active={isActive("/")}>
-            Feed
-          </a>
-        </Link>
-        <Link href="/drafts">
-          <a data-active={isActive("/drafts")}>My drafts</a>
-        </Link>
         <style jsx>{`
           .bold {
             font-weight: bold;
@@ -147,14 +145,8 @@ const Header: React.FC = () => {
     );
     right = (
       <div className="right">
-        <p>
-          {session.user.name} ({session.user.email})
-        </p>
-        <Link href="/create">
-          <button>
-            <a>New post</a>
-          </button>
-        </Link>
+        <p>Prijavljen kao {session.user?.phoneNumber}</p>
+
         <button onClick={() => signOut()}>
           <a>Log out</a>
         </button>
