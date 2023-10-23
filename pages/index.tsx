@@ -215,7 +215,9 @@ const Blog: React.FC<Props> = (props) => {
                       </>
                     ) : !!post.reservedBy ? (
                       <span>Rezervirano</span>
-                    ) : null}
+                    ) : (
+                      <span>Slobodan termin</span>
+                    )}
                   </div>
                 ));
               }
