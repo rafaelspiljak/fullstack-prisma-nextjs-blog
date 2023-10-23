@@ -6,7 +6,7 @@ type Props = {
 };
 
 const Layout: React.FC<Props> = (props) => (
-  <div>
+  <div className="bg-gray-300 h-full">
     <Header />
     <div className="layout">{props.children}</div>
     <style jsx global>{`
@@ -27,7 +27,8 @@ const Layout: React.FC<Props> = (props) => (
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
           "Segoe UI Symbol";
-        background: rgba(0, 0, 0, 0.05);
+        background: rgba(209, 213, 219, 0.05);
+        min-height: 100vh;
       }
 
       input,

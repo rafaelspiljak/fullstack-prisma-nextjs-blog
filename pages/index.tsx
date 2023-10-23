@@ -5,6 +5,7 @@ import prisma from "../lib/prisma";
 import { useSession } from "next-auth/react";
 import moment from "moment-timezone";
 import { useRouter } from "next/router";
+import toast from "react-hot-toast";
 
 export const getStaticProps: GetStaticProps = async (req) => {
   const today = new Date();
@@ -137,10 +138,10 @@ const Blog: React.FC<Props> = (props) => {
     <Layout>
       <div className="page">
         <main>
-          <div className="flex gap-2">
+          <div className="bg-gray-400 p-2 m-2 rounded-lg grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 lg:grid-cols-8">
             {Object.keys(props.timeSlotsByDay).map((dayIndex, index) => {
               return (
-                <span
+                <div
                   key={dayIndex}
                   onClick={() => {
                     setSelectedDateIndex(dayIndex);
@@ -150,59 +151,78 @@ const Blog: React.FC<Props> = (props) => {
                     selectedDateIndex === dayIndex
                       ? selectedDay
                       : ""
-                  } cursor-pointer`}
+                  } cursor-pointer `}
                 >
                   {dayIndex}
-                </span>
+                </div>
               );
             })}
           </div>
-          {Object.keys(props.timeSlotsByDay).map((dayIndex, index) => {
-            if (
-              (index === 0 && selectedDateIndex === null) ||
-              selectedDateIndex === dayIndex
-            ) {
-              return props.timeSlotsByDay[dayIndex].map((post) => (
-                <div key={post.id} className="gap-2 flex items-center">
-                  <span>{post.id.split(":00.000")[0].replace("T", " ")}</span>
-                  {!!session ? (
-                    <>
-                      {!post.reservedBy ? (
-                        <button
-                          className="m-2 p-2 bg-gray-600 rounded-lg text-white"
-                          onClick={async () => {
-                            await fetch(`/api/reserve-slot/`, {
-                              method: "POST",
-                              body: JSON.stringify({ id: post.id }),
-                            });
-                            router.reload();
-                          }}
-                        >
-                          Rezerviraj termin
-                        </button>
-                      ) : post.reservedBy?.id == session?.user?.id ? (
-                        <button
-                          className="m-2 p-2 bg-red-400 rounded-lg text-white"
-                          onClick={async () => {
-                            await fetch(`/api/reserve-slot/${post.id}`, {
-                              method: "DELETE",
-                            });
-                            router.reload();
-                          }}
-                        >
-                          Otkaži rezervaciju
-                        </button>
-                      ) : null}
-                    </>
-                  ) : !!post.reservedBy ? (
-                    <span>Rezervirano</span>
-                  ) : null}
-                </div>
-              ));
-            }
+          <div className="bg-gray-500 p-2 rounded-lg m-2">
+            {Object.keys(props.timeSlotsByDay).map((dayIndex, index) => {
+              if (
+                (index === 0 && selectedDateIndex === null) ||
+                selectedDateIndex === dayIndex
+              ) {
+                return props.timeSlotsByDay[dayIndex].map((post) => (
+                  <div key={post.id} className="gap-2 flex items-center my-2">
+                    <span>{post.id.split(":00.000")[0].replace("T", " ")}</span>
+                    {!!session ? (
+                      <>
+                        {!post.reservedBy ? (
+                          <button
+                            className="m-2 p-2 bg-gray-600 rounded-lg text-white"
+                            onClick={async () => {
+                              try {
+                                await fetch(`/api/reserve-slot/`, {
+                                  method: "POST",
+                                  body: JSON.stringify({ id: post.id }),
+                                });
+                                toast.success("Rezervacija uspješna");
+                                setTimeout(() => {
+                                  router.reload();
+                                }, 1000);
+                              } catch (e) {
+                                toast.error("Pokušajte ponovno");
+                              }
+                            }}
+                          >
+                            Rezerviraj termin
+                          </button>
+                        ) : post.reservedBy?.id == session?.user?.id ? (
+                          <button
+                            className="m-2 p-2 bg-red-400 rounded-lg text-white"
+                            onClick={async () => {
+                              try {
+                                await fetch(`/api/reserve-slot/${post.id}`, {
+                                  method: "DELETE",
+                                });
+                                toast.success(
+                                  "Otkazivanje rezervacije uspješno"
+                                );
 
-            return null;
-          })}
+                                setTimeout(() => {
+                                  router.reload();
+                                }, 1000);
+                              } catch (e) {
+                                toast.error("Pokušajte ponovno");
+                              }
+                            }}
+                          >
+                            Otkaži rezervaciju
+                          </button>
+                        ) : null}
+                      </>
+                    ) : !!post.reservedBy ? (
+                      <span>Rezervirano</span>
+                    ) : null}
+                  </div>
+                ));
+              }
+
+              return null;
+            })}
+          </div>
         </main>
       </div>
     </Layout>
