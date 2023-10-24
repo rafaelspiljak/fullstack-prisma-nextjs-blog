@@ -135,10 +135,14 @@ const Blog: React.FC<Props> = (props) => {
   const selectedDay = "border-b-2 border-b-green-600";
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const refreshData = () => {
+    router.replace(router.asPath);
+  };
   return (
     <Layout>
       {isLoading ? (
-        <div className="h-[100vh]">
+        <div className="h-[100vh] w-full flex justify-center items-center">
           <svg
             aria-hidden="true"
             className="inline w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-red-600"
@@ -207,7 +211,7 @@ const Blog: React.FC<Props> = (props) => {
                                     icon: "🎾",
                                   });
                                   setTimeout(() => {
-                                    router.reload();
+                                    refreshData();
                                   }, 2000);
                                 } catch (e) {
                                   toast.error("Pokušajte ponovno");
@@ -234,7 +238,7 @@ const Blog: React.FC<Props> = (props) => {
                                   );
 
                                   setTimeout(() => {
-                                    router.reload();
+                                    refreshData();
                                   }, 2000);
                                 } catch (e) {
                                   toast.error("Pokušajte ponovno");
